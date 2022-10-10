@@ -1,6 +1,12 @@
 library(dplyr)
 library(ggpubr)
 library(patchwork)
+GPPM <- readRDS("GPPM_inclHLAAlleles.rds")
+df <- data.frame(
+    GPPM@elementMetadata
+  )
+saveRDS(df, "gppm_meta.rds")
+
 gppm_meta <- readRDS("~/test/gppm_meta.rds")
 gppm_meta <- gppm_meta %>% filter(variant == "nonsynonymous SNV")
 mt_summ <- gppm_meta %>%
@@ -147,7 +153,7 @@ tt <- as.table(as.matrix(tt))
 library("graphics")
 mosaicplot(tt, shade = T, las=1,border = "skyblue",
            main="Mutation type distribution of non-expressed genes",
-           type = "deviance",off = 3,cex.axis=1.3)
+           type = "pearson",off = 3,cex.axis=1.3)
 
 ###
 library(hrbrthemes)
