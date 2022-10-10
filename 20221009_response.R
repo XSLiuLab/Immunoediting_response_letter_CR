@@ -1,18 +1,18 @@
 library(dplyr)
 library(ggpubr)
 library(patchwork)
-GPPM <- readRDS("GPPM_inclHLAAlleles.rds")
-df <- data.frame(
-    GPPM@elementMetadata
-  )
-saveRDS(df, "gppm_meta.rds")
-
-gppm_meta <- readRDS("~/test/gppm_meta.rds")
-gppm_meta <- gppm_meta %>% filter(variant == "nonsynonymous SNV")
-mt_summ <- gppm_meta %>%
-  group_by(subst_type3) %>%
-  summarise(neo_per=mean(HLA_aff_mean<500)) %>% ungroup()
-saveRDS(mt_summ,file = "all_sim_mt.rds")
+# GPPM <- readRDS("GPPM_inclHLAAlleles.rds")
+# df <- data.frame(
+#     GPPM@elementMetadata
+#   )
+# saveRDS(df, "gppm_meta.rds")
+#
+# gppm_meta <- readRDS("~/test/gppm_meta.rds")
+# gppm_meta <- gppm_meta %>% filter(variant == "nonsynonymous SNV")
+# mt_summ <- gppm_meta %>%
+#   group_by(subst_type3) %>%
+#   summarise(neo_per=mean(HLA_aff_mean<500)) %>% ungroup()
+# saveRDS(mt_summ,file = "all_sim_mt.rds")
 
 
 ##获取突变类型
@@ -72,50 +72,50 @@ saveRDS(mut_dt_letter ,file = "mut_dt_letter.rds")
 
 ##相关性
 all_mut_wu <- readRDS("mut_dt_wu.rds")
-all_mut_wu %>%
-  group_by(mutation_type)%>%
-  summarise(neo_c=mean(neo=="neo")) -> all_mut_wu_mt_summ
+# all_mut_wu %>%
+#   group_by(mutation_type)%>%
+#   summarise(neo_c=mean(neo=="neo")) -> all_mut_wu_mt_summ
 all_mut_letter <- readRDS("~/test/mut_dt_letter.rds")
-all_mut_letter %>%
-  group_by(mutation_type)%>%
-  summarise(neo_c=mean(ic50<500)) -> all_mut_letter_mt_summ
-all_mut_summ <- left_join(
-  all_mut_letter_mt_summ %>% rename(sim_neo=neo_c),
-  all_mut_wu_mt_summ %>% rename(real_neo=neo_c)
-)
-p1 <- ggscatter(all_mut_summ, x = "sim_neo", y = "real_neo",
-          color = "black", shape = 21, size = 3, # Points color, shape and size
-          add = "reg.line",  # Add regressin line
-          add.params = list(color = "blue", fill = "lightgray"), # Customize reg. line
-          conf.int = TRUE, # Add confidence interval
-          cor.coef = TRUE, # Add correlation coefficient. see ?stat_cor
-          cor.coeff.args = list(method = "pearson", label.x = 0.2, label.sep = "\n", size=6),
-          title = "TCGA sim VS actual mutation",xlab = "Neoantigen proportion of simulated data",
-          ylab = "Neoantigen proportion of actual data"
-)
-
-mapping <- all_mut_letter %>% select(mut_type3,mutation_type) %>% distinct_all()
-all_sim_mt <- readRDS("~/test/all_sim_mt.rds")
-all_sim_mt <- left_join(
-  all_sim_mt %>% rename(mut_type3=subst_type3),
-  mapping
-)
-all_mut_summ <- left_join(
-  all_sim_mt %>% rename(sim_neo=neo_per),
-  all_mut_wu_mt_summ %>% rename(real_neo=neo_c)
-)
-p2 <- ggscatter(all_mut_summ, x = "sim_neo", y = "real_neo",
-          color = "black", shape = 21, size = 3, # Points color, shape and size
-          add = "reg.line",  # Add regressin line
-          add.params = list(color = "blue", fill = "lightgray"), # Customize reg. line
-          conf.int = TRUE, # Add confidence interval
-          cor.coef = TRUE, # Add correlation coefficient. see ?stat_cor
-          cor.coeff.args = list(method = "pearson", label.x = 0.26, label.sep = "\n",size=6),
-          title = "All GPPM sim VS TCGA actual mutation",xlab = "Neoantigen proportion of simulated data",
-          ylab = "Neoantigen proportion of actual data"
-)
-
-p2 + p1
+# all_mut_letter %>%
+#   group_by(mutation_type)%>%
+#   summarise(neo_c=mean(ic50<500)) -> all_mut_letter_mt_summ
+# all_mut_summ <- left_join(
+#   all_mut_letter_mt_summ %>% rename(sim_neo=neo_c),
+#   all_mut_wu_mt_summ %>% rename(real_neo=neo_c)
+# )
+# p1 <- ggscatter(all_mut_summ, x = "sim_neo", y = "real_neo",
+#           color = "black", shape = 21, size = 3, # Points color, shape and size
+#           add = "reg.line",  # Add regressin line
+#           add.params = list(color = "blue", fill = "lightgray"), # Customize reg. line
+#           conf.int = TRUE, # Add confidence interval
+#           cor.coef = TRUE, # Add correlation coefficient. see ?stat_cor
+#           cor.coeff.args = list(method = "pearson", label.x = 0.2, label.sep = "\n", size=6),
+#           title = "TCGA sim VS actual mutation",xlab = "Neoantigen proportion of simulated data",
+#           ylab = "Neoantigen proportion of actual data"
+# )
+#
+# mapping <- all_mut_letter %>% select(mut_type3,mutation_type) %>% distinct_all()
+# all_sim_mt <- readRDS("~/test/all_sim_mt.rds")
+# all_sim_mt <- left_join(
+#   all_sim_mt %>% rename(mut_type3=subst_type3),
+#   mapping
+# )
+# all_mut_summ <- left_join(
+#   all_sim_mt %>% rename(sim_neo=neo_per),
+#   all_mut_wu_mt_summ %>% rename(real_neo=neo_c)
+# )
+# p2 <- ggscatter(all_mut_summ, x = "sim_neo", y = "real_neo",
+#           color = "black", shape = 21, size = 3, # Points color, shape and size
+#           add = "reg.line",  # Add regressin line
+#           add.params = list(color = "blue", fill = "lightgray"), # Customize reg. line
+#           conf.int = TRUE, # Add confidence interval
+#           cor.coef = TRUE, # Add correlation coefficient. see ?stat_cor
+#           cor.coeff.args = list(method = "pearson", label.x = 0.26, label.sep = "\n",size=6),
+#           title = "All GPPM sim VS TCGA actual mutation",xlab = "Neoantigen proportion of simulated data",
+#           ylab = "Neoantigen proportion of actual data"
+# )
+#
+# p2 + p1
 
 ############
 ###不表达基因突变类型的分布差异
@@ -155,7 +155,7 @@ mosaicplot(tt, shade = T, las=1,border = "skyblue",
            main="Mutation type distribution of non-expressed genes",
            type = "pearson",off = 3,cex.axis=1.3)
 
-###
+###表达
 library(hrbrthemes)
 all_mut_wu %>% as.data.frame() %>%
   mutate(index=paste(sample,chromosome,position,ref,alt,sep = ":")) %>%
@@ -195,3 +195,57 @@ p2 <- ggplot(data=sim_gene_summ,aes(x=exp_type,y=log(mut_counts)))+
 
 p1 + p2
 
+# ####多次抽样
+# gppm_meta <- readRDS("~/test/gppm_meta.rds")
+# gppm_meta <- gppm_meta %>% filter(variant == "nonsynonymous SNV")
+# TCGA_maf_sim <- readRDS("~/test/TCGA_maf_sim.rds")
+# TCGA_maf_sim<- TCGA_maf_sim[TCGA_maf_sim$Variant_Classification=="nonsynonymous SNV",]
+# TCGA_maf_sim<- TCGA_maf_sim[!is.na(TCGA_maf_sim$mRNA),]
+# TCGA_maf_sim <- TCGA_maf_sim %>% select(Hugo_Symbol,mut_HLA_mean_aff,subst_type3)
+# TCGA_maf_sim <- TCGA_maf_sim %>% rename(mut_type3=subst_type3)
+# all_mut_wu <- readRDS("mut_dt_wu.rds")
+# all_mut_wu %>%
+#   group_by(mutation_type)%>%
+#   summarise(neo_c=mean(neo=="neo")) -> all_mut_wu_mt_summ
+# all_mut_letter <- readRDS("~/test/mut_dt_letter.rds")
+# mapping <- all_mut_letter %>% select(mut_type3,mutation_type) %>% distinct_all()
+#
+#
+# get_sim_tcga <- function(TCGA_maf_sim,gppm_meta,num,mapping,all_mut_wu_mt_summ){
+#   subst_type3_all<- unique(as.character(TCGA_maf_sim[,"mut_type3"]))
+#   pb <- txtProgressBar(min = 0, max = length(subst_type3_all), style = 3)
+#   for(i in 1:length(subst_type3_all)){
+#     setTxtProgressBar(pb, i)
+#     # cat(i," ")
+#     subst_type3_temp<- subst_type3_all[i]
+#     idx_subst_type<- which(as.character(TCGA_maf_sim[,"mut_type3"])==subst_type3_temp)
+#     GPPM_subst_type3<- gppm_meta[which(gppm_meta$subst_type3==subst_type3_temp),]
+#     GPPM_sim<- GPPM_subst_type3[sample(1:length(GPPM_subst_type3),
+#                                        size=length(idx_subst_type),replace = T),]
+#     TCGA_maf_sim[idx_subst_type,"Hugo_Symbol"]<- GPPM_sim$gene
+#     TCGA_maf_sim[idx_subst_type,"mut_HLA_mean_aff"]<- GPPM_sim$HLA_aff_mean
+#   }
+#   saveRDS(TCGA_maf_sim,file=paste0("sim_tcga/sim_tcga_",num,".rds"))
+#   TCGA_maf_sim <- left_join(
+#     TCGA_maf_sim,
+#     mapping
+#   )
+#   TCGA_maf_sim %>%
+#     group_by(mutation_type)%>%
+#     summarise(neo_c=mean(mut_HLA_mean_aff<500)) -> all_mut_letter_mt_summ
+#   all_mut_summ <- left_join(
+#     all_mut_letter_mt_summ %>% rename(sim_neo=neo_c),
+#     all_mut_wu_mt_summ %>% rename(real_neo=neo_c)
+#   )
+#   saveRDS(all_mut_summ,file = paste0("sim_tcga/cor_tcga_",num,".rds"))
+#   a <- cor.test(all_mut_summ$sim_neo,all_mut_summ$real_neo)
+#   message("Cor ",a$estimate)
+# }
+#
+# for (i in 1:36){
+#   get_sim_tcga(TCGA_maf_sim = TCGA_maf_sim,
+#                gppm_meta = gppm_meta,
+#                num = i,
+#                mapping = mapping,
+#                all_mut_wu_mt_summ = all_mut_wu_mt_summ)
+# }
